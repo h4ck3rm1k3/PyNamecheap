@@ -19,13 +19,14 @@ dlist = api.domains_getList()
 newip = '173.61.181.25'
 oldipv6 =  '2001:0:53aa:64c:41:3e29:52c2:4ae6'
 newipv6 =  '2001:0:53aa:64c:8da:2639:52c2:4ae6'
-badnames = ('parkingpage.namecheap.com.', oldipv6, newipv6 )
+badnames = ('parkingpage.namecheap.com.', oldipv6 ) #newipv6
 githuba = '192.30.252.153'
 githubb = '192.30.252.154'
 #            parkingpage.namecheap.com
 
 def dfix(x,h):
         domain_name = x['Name']
+
         print (h['Name']+"."+x['Name'] +" => To fix")
         api.domains_dns_setHosts(
                         domain_name,
@@ -34,6 +35,13 @@ def dfix(x,h):
                                         'HostName' : 'www',
                                         'RecordType' : 'AAAA',
                                         'Address': newipv6,
+                                        'MXPref' : '10',
+                                        'TTL' : '100'
+                                },
+                                {
+                                        'HostName' : 'www',
+                                        'RecordType' : 'CNAME',
+                                        'Address':  domain_name,
                                         'MXPref' : '10',
                                         'TTL' : '100'
                                 },
@@ -71,6 +79,7 @@ def proc(x):
     has_a_ghb=False
     has_www=False
     has_aaaa_www=False
+    has_cname=False
 
     for h in hosts:
         if h['Type'] in ('URL301','URL','TXT'):
@@ -81,13 +90,15 @@ def proc(x):
                 if h['Type'] == 'A':
                         if h['Address'] == githubb:
                                 has_a_ghb = True
-                        elif h['Address'] == githubb:
+                        elif h['Address'] == githuba:
                                 has_a_gha = True
                         else:
                                 print ("Other" + h['Name']+"."+x['Name']  + " " + h['Type'] +" =>"+ h['Address'])                        
         elif h['Name'] == 'www':
                 if h['Type'] == 'CNAME':
                         has_www=True
+                        if h['Address'] == domain_name:
+                                has_cname=True
                         if 'github' in h['Address']:
                                 print ('skipping github')
                                 return
@@ -97,14 +108,19 @@ def proc(x):
                         print (h['Name']+"."+x['Name'] + " " + h['Type'] +" =>"+ h['Address'])
                         #pprint.pprint(h)
 
-    if (not (has_aaaa_www and has_www and has_a_ghb and has_a_gha)):
-            if (has_aaaa_www or has_www or has_www or has_a_ghb or has_a_gha):
-                    print ("Problem\n")
-                    print (h['Name']+"."+x['Name'] + " " + h['Type'] +" =>"+ h['Address'])
+    if (not (has_aaaa_www and has_www and has_a_ghb and has_a_gha and has_cname)):
+            if (has_aaaa_www or has_www or has_a_ghb or has_a_gha or has_cname):
+                    print ("Problem with %s\n" % domain_name)
                     pprint.pprint(x)
-                    pprint.pprint(h)
-                    if h['Address'] in badnames:
-                            dfix(x,h)
+                    print (" has_aaaa_www :" + str(has_aaaa_www))
+                    print (" has_www :" + str(has_www))
+                    print (" has_a_ghb :" + str(has_a_ghb))
+                    print (" has_a_gha :" + str(has_a_gha))
+                    print (" has_cname :" + str(has_cname)) 
+                    pprint.pprint(hosts)
+                    print("Going to fix! %s\n" % domain_name)
+                    #dfix(x,h)
+                    
   except Exception as e:
         if str(e) ==(
                         '2030288 - Cannot complete this command as'
