@@ -77,7 +77,6 @@ def proc(x):
     hosts = api.domains_dns_getHosts(domain_name)
     has_a_gha=False
     has_a_ghb=False
-    has_www=False
     has_aaaa_www=False
     has_cname=False
 
@@ -96,7 +95,6 @@ def proc(x):
                                 print ("Other" + h['Name']+"."+x['Name']  + " " + h['Type'] +" =>"+ h['Address'])                        
         elif h['Name'] == 'www':
                 if h['Type'] == 'CNAME':
-                        has_www=True
                         if h['Address'] == domain_name:
                                 has_cname=True
                         if 'github' in h['Address']:
@@ -108,18 +106,17 @@ def proc(x):
                         print (h['Name']+"."+x['Name'] + " " + h['Type'] +" =>"+ h['Address'])
                         #pprint.pprint(h)
 
-    if (not (has_aaaa_www and has_www and has_a_ghb and has_a_gha and has_cname)):
-            if (has_aaaa_www or has_www or has_a_ghb or has_a_gha or has_cname):
+    if (not (has_aaaa_www  and has_a_ghb and has_a_gha and has_cname)):
+            if (has_aaaa_www  or has_a_ghb or has_a_gha or has_cname):
                     print ("Problem with %s\n" % domain_name)
                     pprint.pprint(x)
                     print (" has_aaaa_www :" + str(has_aaaa_www))
-                    print (" has_www :" + str(has_www))
                     print (" has_a_ghb :" + str(has_a_ghb))
                     print (" has_a_gha :" + str(has_a_gha))
                     print (" has_cname :" + str(has_cname)) 
                     pprint.pprint(hosts)
                     print("Going to fix! %s\n" % domain_name)
-                    #dfix(x,h)
+                    dfix(x,h)
                     
   except Exception as e:
         if str(e) ==(
