@@ -1,3 +1,13 @@
+Mike's hacks
+==============
+
+create the projects via this project :
+https://github.com/h4ck3rm1k3/create-project
+
+
+python3 namecheap_myip_check.py
+
+
 Namecheap API for Python
 ===========
 
