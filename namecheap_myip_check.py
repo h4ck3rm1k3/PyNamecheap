@@ -163,14 +163,14 @@ for x in dlist:
 
         hosts = None
 
-        if( domain_name in d ):
-                hosts = d[domain_name]
-        else:
-                try:
-                        hosts = api.domains_dns_getHosts(domain_name)
-                        d[domain_name]=hosts
-                except Exception as e:
-                        print (e)
+        #if( domain_name in d ):
+        #        hosts = d[domain_name]
+        #else:
+        try:
+                hosts = api.domains_dns_getHosts(domain_name)
+                d[domain_name]=hosts
+        except Exception as e:
+                print (e)
                         
         x['hosts']=hosts
 
